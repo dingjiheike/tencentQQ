@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title> 蓝鸥科技 | 腾讯小小Q </title>
+	<style type="text/css">
+		body { margin: 0 auto; }
+		#qrobot {
+			width: 980px; margin: 50px auto 0;
+			user-select: none; text-align: center;
+			background: url(images/bg.png) no-repeat;
+			position: relative;
+		}
+		#qrobot img {
+			user-select: none;
+		}
+		#qrobot p {
+			position: absolute; left: 0; right: 0; top: 0px;
+		}
+
+		#qrobot span {
+			position: absolute; top: 50%; bottom: 0; width: 44px; height: 95px;
+			background: url(images/qrq-3d-spr.png) no-repeat; transform: translateY(-50%);
+		}
+		#qrobot .left { left: 200px; background-position: left center; }
+		#qrobot .right { right: 200px; background-position: right center; }
+	</style>
+</head>
+<body>
+	<div id="qrobot">
+		<img src="images/12.jpg" alt="">
+		<p>向左/右拖拽可观赏360°视角</p>
+		<span class="left"></span>
+		<span class="right"></span>
+	</div>
+	<script>
+		var qRobot = document.getElementById('qrobot');
+		var qImg = qRobot.getElementsByTagName('img')[0];
+		var arrImg = [], index = 11, count = 0;
+
+		for(var i=0; i<24; i++){
+			var oImg = new Image();
+			oImg.src = "images/" + i + ".jpg";
+			arrImg.push(oImg);
+		}
+
+		qRobot.onmousedown = function(ev){
+			var disX = ev.clientX, thisX = 0;
+			//console.log(disX);
+			document.onmousemove = function(ev){
+				thisX = ev.clientX - disX;
+				count ++;
+				//console.log(thisX);
+				// return;
+				if( count % 5 == 0){
+                   // console.log(count);
+					if( thisX > 0 ){
+						index --;
+					}else{
+						index ++;
+					}
+					//console.log(index);
+					index = (24 + index) % 24;
+					//当index等于24的时候，变成0
+					//console.log(index);
+					qImg.src = arrImg[index].src;
+					disX = ev.clientX;
+                   // console.log(disX);
+				}
+
+			};
+
+			document.onmouseup = function(ev){
+				//console.log(thisX);
+				var fx = thisX > 0 ? -1 : 1;
+				var speed = Math.abs(thisX);
+				//速度是鼠抬起到鼠标落下之间的位移
+				console.log(speed);
+				speed = parseInt( speed < 10 ? speed / 6 : speed/30 );
+				//速度小于10的情况模除10后取整，反之模除30后取整
+				console.log(speed);
+				if( speed > 0 ){
+					doMove(speed,8,fx);
+					//console.log(speed,8,fx);
+				}
+				document.onmousemove = document.onmouseup = null;
+			};
+
+			return false;
+		};
+
+		// doMove(10,15);
+		function doMove(speed,skip,fx){
+			setTimeout(function(){
+				count ++;
+				
+				if( count % skip == 0 ) speed --;
+				index = index + speed*fx;
+				console.log(index);
+				index = (24 + index) % 24;
+				qImg.src = arrImg[index].src;
+				if(speed > 0 )doMove(speed,skip,fx);
+			},30);
+		}
+	</script>
+</body>
+</html>
